@@ -30,6 +30,12 @@
 #include "cart.h"
 #include "errors.h"
 
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
+/* file I/O goes through the libretro VFS, plain stderr logging must not */
+#undef fprintf
+
 // TODO: remove log
 #define ERR(x) fprintf(stderr, x "\n")
 #ifdef DEBUG_CART

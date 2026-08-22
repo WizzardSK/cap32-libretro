@@ -38,16 +38,16 @@
  ****************************************************************************************/
 
 
-#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include<lrc_hash.h>
 
+#include <file/file_path.h>
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
 #include "retro_utils.h"
-#ifdef VITA
-   #include "file/file_path.h"
-#endif
 
 extern FILE *pfileObject;
 extern uint8_t* pbGPBuffer;
@@ -94,29 +94,24 @@ bool file_check_flag(const char *filename, const size_t filename_size, const cha
 // Verify if file exists
 bool file_exists(const char *filename)
 {
-#ifdef VITA
+   /* goes through the libretro VFS when the frontend provides one */
    if (path_is_valid(filename) && !path_is_directory(filename))
-#else
-   struct stat buf;
-   if (stat(filename, &buf) == 0 &&
-      (buf.st_mode & (S_IRUSR|S_IWUSR)) && !(buf.st_mode & S_IFDIR))
-#endif
    {
-      /* file points to user readable regular file */
+      /* file points to a regular file */
       return true;
    }
    return false;
 }
 
-int file_size (int file_num)
+int64_t file_size (RFILE *file)
 {
-   struct stat s;
+   int64_t size;
 
-   if (!fstat(file_num, &s)) {
-      return s.st_size;
-   } else {
+   if (!file)
       return 0;
-   }
+
+   size = filestream_get_size(file);
+   return (size > 0) ? size : 0;
 }
 
 void path_join(char* out, const char* basedir, const char* filename)
@@ -194,7 +189,7 @@ uint32_t get_hash(const char* filename) {
       return 0;
    }
 
-   size = file_size(fileno(pfileObject));
+   size = file_size(pfileObject);
    if (!size)
    { // the file should have at least the DSK header...
       fclose(pfileObject);

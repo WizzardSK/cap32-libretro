@@ -32,6 +32,9 @@
 #include "retro_utils.h"
 #include "rom/cpm.h"
 
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
 extern t_CPC CPC;
 extern t_CRTC CRTC;
 extern t_FDC FDC;
@@ -472,7 +475,7 @@ int snapshot_load (char *pchFileName)
 
    if ((pfileObject = fopen(pchFileName, "rb")) != NULL)
    {
-      size = file_size(fileno(pfileObject));
+      size = file_size(pfileObject);
       if (size <= sizeof(t_SNA_header))
       { // the sna image should have at least the header...
          fclose(pfileObject);
@@ -510,7 +513,7 @@ int snapshot_save (char *pchFileName)
    }
 
    if ((pfileObject = fopen(pchFileName, "wb")) != NULL) {
-      if (fwrite(pbSnaImage, dwSnapSize, 1, pfileObject) != 1) { // write snapshot header
+      if (fwrite(pbSnaImage, 1, dwSnapSize, pfileObject) != dwSnapSize) { // write snapshot header
          fclose(pfileObject);
          return ERR_SNA_WRITE;
       }
@@ -1125,7 +1128,7 @@ int tape_insert (char *pchFileName)
       return ERR_TAP_INVALID;
    }
 
-   lFileSize = file_size(fileno(pfileObject)) - 0x0a;
+   lFileSize = file_size(pfileObject) - 0x0a;
 
    if (lFileSize <= 0)
    { // the tape image should have at least one block...
@@ -1144,7 +1147,7 @@ int tape_insert (char *pchFileName)
    *(uint16_t *)(pbTapeImage+lFileSize+3+1) = 2000; // set the length to 2 seconds
 
    #ifdef DEBUG_TAPE
-   fputs("--- New Tape\r\n", pfoDebug);
+   fprintf(pfoDebug, "%s", "--- New Tape\r\n");
    #endif
    pbTapeImageEnd = pbTapeImage + lFileSize+6;
    pbBlock = pbTapeImage;
@@ -1288,7 +1291,7 @@ int tape_insert_voc (char *pchFileName)
    }
    lOffset =
    lInitialOffset = *(uint16_t *)(pbPtr + 0x14);
-   lFileSize = file_size(fileno(pfileObject));
+   lFileSize = file_size(pfileObject);
 
    if ((lFileSize-26) <= 0)
    { // should have at least one block...
@@ -1297,7 +1300,7 @@ int tape_insert_voc (char *pchFileName)
    }
 
    #ifdef DEBUG_TAPE
-   fputs("--- New Tape\r\n", pfoDebug);
+   fprintf(pfoDebug, "%s", "--- New Tape\r\n");
    #endif
    iBlockLength = 0;
    lSampleLength = 0;

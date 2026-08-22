@@ -45,6 +45,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <streams/file_stream.h>
+
 //*****************************************************************************
 // File helpers functions
 #define RETRO_PATH_MAX 512
@@ -63,7 +65,7 @@ void path_join(char* out, const char* basedir, const char* filename);
 char* path_join_dup(const char* basedir, const char* filename);
 
 bool file_exists(const char *filename);
-int file_size (int file_num);
+int64_t file_size (RFILE *file);
 uint32_t get_hash(const char *filename);
 
 void *retro_malloc(size_t size);

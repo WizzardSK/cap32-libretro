@@ -56,6 +56,9 @@
 #include "retro_snd.h"
 #include "retro_ui.h"
 
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
 extern t_CPC CPC;
 extern t_FDC FDC;
 extern t_z80regs z80;

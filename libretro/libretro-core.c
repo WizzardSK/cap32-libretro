@@ -42,6 +42,8 @@
 #include "libretro-core.h"
 #include "string/stdstring.h"
 #include "file/file_path.h"
+#include "streams/file_stream.h"
+#include "retro_dirent.h"
 
 #include "retro_events.h"
 #include "retro_utils.h"
@@ -780,6 +782,18 @@ void retro_set_environment(retro_environment_t cb)
 
    bool allow_no_game = true;
    cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &allow_no_game);
+
+   /* VFS: let the frontend handle all file access (needed by the Android
+    * Play Store build of RetroArch, where content lives behind SAF URIs) */
+   struct retro_vfs_interface_info vfs_iface_info;
+   vfs_iface_info.required_interface_version = 3;
+   vfs_iface_info.iface                      = NULL;
+   if (cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_iface_info))
+   {
+      filestream_vfs_init(&vfs_iface_info);
+      path_vfs_init(&vfs_iface_info);
+      dirent_vfs_init(&vfs_iface_info);
+   }
 
    environ_cb( RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports );
 

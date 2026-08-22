@@ -44,6 +44,9 @@
 #include "z80.h"
 #include "asic.h"
 
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
 extern t_CPC CPC;
 extern t_CRTC CRTC;
 extern t_GateArray GateArray;
