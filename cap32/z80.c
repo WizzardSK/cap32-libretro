@@ -63,6 +63,9 @@
 #include "tape.h"
 #include "asic.h"
 
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
 extern t_CPC CPC;
 extern t_FDC FDC;
 extern t_GateArray GateArray;

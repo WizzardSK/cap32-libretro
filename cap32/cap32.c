@@ -197,6 +197,9 @@ extern retro_log_printf_t log_cb;
 #include "errors.h"
 #include "lightgun/lightgun.h"
 
+#include <streams/file_stream.h>
+#include <streams/file_stream_transforms.h>
+
 #define MSG_SNA_LOAD             32
 #define MSG_SNA_SAVE             33
 #define MSG_DSK_LOAD             34
@@ -960,7 +963,7 @@ void z80_OUT_handler (reg_pair port, uint8_t val)
          retro_snd_cmd(SND_FDCMOTOR, ST_OFF);
       }
       #ifdef DEBUG_FDC
-      fputs(FDC.motor ? "\r\n--- motor on" : "\r\n--- motor off", pfoDebug);
+      fprintf(pfoDebug, "%s", FDC.motor ? "\r\n--- motor on" : "\r\n--- motor off");
       #endif
       FDC.flags |= STATUSDRVA_flag | STATUSDRVB_flag;
    }
